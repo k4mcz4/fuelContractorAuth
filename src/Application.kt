@@ -10,9 +10,12 @@ import kotlinx.html.*
 import io.ktor.auth.*
 import com.fasterxml.jackson.databind.*
 import com.fuelContractorAuth.auth.OAuth2
+import freemarker.cache.ClassTemplateLoader
 import io.ktor.client.HttpClient
 import io.ktor.jackson.*
 import io.ktor.features.*
+import io.ktor.freemarker.FreeMarker
+import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.server.engine.embeddedServer
 import java.io.File
 
@@ -22,11 +25,18 @@ fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
     install(Authentication) {
+        /*
         oauth("eve-esi"){
-            client = HttpClient(Apache)
+            client = HttpClient()
             providerLookup = { OAuth2().eveOauthProvider }
 
         }
+        */
+
+    }
+
+    install(FreeMarker){
+        templateLoader = ClassTemplateLoader(this::class.java.classLoader, "/templates")
     }
 
     install(ContentNegotiation) {
@@ -49,13 +59,18 @@ fun Application.module(testing: Boolean = false) {
             call.respondText(html, ContentType.Text.Html)
         }
 
+        get("/damian"){
+            val user = User(name = "Herr_Oqtavian", account = 20000000)
+            call.respond(FreeMarkerContent("authPage.html.ftl", mapOf("user" to user), "e"))
+        }
+
         get("/auth"){
 
         }
     }
 }
 
-data class User(var name: String, var accountBalance: Int, var assets: UserAssets, var orders: UserOrders)
+data class User(var name: String, var account: Int)
 
 data class UserAssets(val assetName: String, val assetLocation: String)
 

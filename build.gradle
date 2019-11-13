@@ -37,4 +37,5 @@ dependencies {
     compile "io.ktor:ktor-auth:$ktor_version"
     compile "io.ktor:ktor-jackson:$ktor_version"
     testCompile "io.ktor:ktor-server-tests:$ktor_version"
+    compile "io.ktor:ktor-freemarker:$ktor_version"
 }

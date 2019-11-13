@@ -18,6 +18,7 @@ import io.ktor.freemarker.FreeMarker
 import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.server.engine.embeddedServer
 import java.io.File
+import java.nio.file.Path
 
 fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
 
@@ -35,7 +36,7 @@ fun Application.module(testing: Boolean = false) {
 
     }
 
-    install(FreeMarker){
+    install(FreeMarker) {
         templateLoader = ClassTemplateLoader(this::class.java.classLoader, "/templates")
     }
 
@@ -45,26 +46,28 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
-
-    fun coreFilePath(fileName: String): String{
-        val corePath = "C:\\Users\\kczarniecki\\Downloads\\fuelContractorAuth\\src\\"
-        return corePath + fileName
+    fun getRoot(path: String): String {
+        return System.getProperty("user.dir") + "/src" + path
     }
 
 
 
+
     routing {
-        get("/"){
-            val html = File(coreFilePath("frontEndTemplate\\authPage.html")).readText()
+        get("/fuckedup") {
+            //This method is shitty, find something else, like the one below
+            val html = File(getRoot("/frontEndTemplate/authPage.html")).readText()
             call.respondText(html, ContentType.Text.Html)
         }
 
-        get("/damian"){
+        get("/") {
+
             val user = User(name = "Herr_Oqtavian", account = 20000000)
             call.respond(FreeMarkerContent("authPage.html.ftl", mapOf("user" to user), "e"))
+
         }
 
-        get("/auth"){
+        get("/auth") {
 
         }
     }

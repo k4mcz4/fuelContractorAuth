@@ -9,8 +9,12 @@ import io.ktor.html.*
 import kotlinx.html.*
 import io.ktor.auth.*
 import com.fasterxml.jackson.databind.*
+import com.fuelContractorAuth.auth.OAuth2
+import io.ktor.client.HttpClient
 import io.ktor.jackson.*
 import io.ktor.features.*
+import io.ktor.server.engine.embeddedServer
+import java.io.File
 
 fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
 
@@ -18,6 +22,11 @@ fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
     install(Authentication) {
+        oauth("eve-esi"){
+            client = HttpClient(Apache)
+            providerLookup = { OAuth2().eveOauthProvider }
+
+        }
     }
 
     install(ContentNegotiation) {
@@ -26,27 +35,28 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
+
+    fun coreFilePath(fileName: String): String{
+        val corePath = "C:\\Users\\kczarniecki\\Downloads\\fuelContractorAuth\\src\\"
+        return corePath + fileName
+    }
+
+
+
     routing {
-        get("/") {
-            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
+        get("/"){
+            val html = File(coreFilePath("frontEndTemplate\\authPage.html")).readText()
+            call.respondText(html, ContentType.Text.Html)
         }
 
-        get("/html-dsl") {
-            call.respondHtml {
-                body {
-                    h1 { +"HTML" }
-                    ul {
-                        for (n in 1..10) {
-                            li { +"$n" }
-                        }
-                    }
-                }
-            }
-        }
+        get("/auth"){
 
-        get("/json/jackson") {
-            call.respond(mapOf("hello" to "world"))
         }
     }
 }
 
+data class User(var name: String, var accountBalance: Int, var assets: UserAssets, var orders: UserOrders)
+
+data class UserAssets(val assetName: String, val assetLocation: String)
+
+data class UserOrders(val orderId: Int, val orderName: String, var orderQty: Int)

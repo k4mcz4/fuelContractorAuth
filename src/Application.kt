@@ -52,7 +52,6 @@ fun Application.module(testing: Boolean = false) {
 
 
 
-
     routing {
         get("/fuckedup") {
             //This method is shitty, find something else, like the one below
@@ -62,8 +61,8 @@ fun Application.module(testing: Boolean = false) {
 
         get("/") {
 
-            val user = User(name = "Herr_Oqtavian", account = 20000000)
-            call.respond(FreeMarkerContent("authPage.html.ftl", mapOf("user" to user), "e"))
+            val user = User(name = "Herr_Oqtavian", account = 80000000)
+            call.respond(FreeMarkerContent("authPage.html", mapOf("user" to user), "e"))
 
         }
 

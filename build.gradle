@@ -38,4 +38,5 @@ dependencies {
     compile "io.ktor:ktor-jackson:$ktor_version"
     testCompile "io.ktor:ktor-server-tests:$ktor_version"
     compile "io.ktor:ktor-freemarker:$ktor_version"
+    compile "com.google.code.gson:gson:2.8.6"
 }

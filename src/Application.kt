@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.*
 import com.fuelContractorAuth.auth.OAuth2
 import freemarker.cache.ClassTemplateLoader
 import io.ktor.client.HttpClient
+import io.ktor.client.request.post
+import io.ktor.client.request.request
 import io.ktor.jackson.*
 import io.ktor.features.*
 import io.ktor.freemarker.FreeMarker
@@ -21,6 +23,12 @@ import java.io.File
 import java.nio.file.Path
 
 fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
+
+/*fun main(){
+    val newRequest = OAuth2.Request().createUrl()
+    println(newRequest)
+}
+*/
 
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
@@ -53,21 +61,22 @@ fun Application.module(testing: Boolean = false) {
 
 
     routing {
-        get("/fuckedup") {
-            //This method is shitty, find something else, like the one below
-            val html = File(getRoot("/frontEndTemplate/authPage.html")).readText()
-            call.respondText(html, ContentType.Text.Html)
-        }
-
         get("/") {
 
             val user = User(name = "Herr_Oqtavian", account = 80000000)
             call.respond(FreeMarkerContent("authPage.html", mapOf("user" to user), "e"))
+            println("Someone opened!")
 
         }
 
         get("/auth") {
+            call.respondRedirect(OAuth2.Request().createUrl())
+        }
+        get("/callback"){
+            val code: String? = call.request.queryParameters["code"]
+            val auth = OAuth2.Response(contentType = "application/x-www-form-urlencoded", code = code)
 
+            call.respondRedirect("/")
         }
     }
 }

@@ -68,9 +68,7 @@ class OAuth2 {
 
             val text = connection.inputStream.use { it.reader().use { reader -> reader.readText() } }
 
-            val authResp: AuthResponse = Gson().fromJson(Gson().toJsonTree(text), AuthResponse::class.java)
-
-
+            println(text)
 
         }
 

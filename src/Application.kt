@@ -20,11 +20,14 @@ import io.ktor.freemarker.FreeMarker
 import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.server.engine.embeddedServer
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.nio.file.Path
+import java.sql.Connection
 
 fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
 
@@ -38,13 +41,6 @@ fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
     install(Authentication) {
-        /*
-        oauth("eve-esi"){
-            client = HttpClient()
-            providerLookup = { OAuth2().eveOauthProvider }
-
-        }
-        */
 
     }
 
@@ -73,19 +69,22 @@ fun Application.module(testing: Boolean = false) {
 
         }
 
-        get("/testPath"){
-            val conn = DbController().dbConnect()
-            var userSession: Table = Table("userSession")
-            val result = transaction(conn){
-                userSession.selectAll()
+        get("/testPath") {
+            val userSessionDb = DbController().dbConnect()
+
+            transaction(userSessionDb) {
+                userSession.insert {
+
+                }
             }
-            println(result)
+
+
         }
 
         get("/auth") {
             call.respondRedirect(OAuth2().getUrl())
         }
-        get("/callback"){
+        get("/callback") {
             val code: String? = call.request.queryParameters["code"]
             OAuth2.Response(contentType = "application/x-www-form-urlencoded", code = code).postAuthenticate()
 

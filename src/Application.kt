@@ -19,6 +19,10 @@ import io.ktor.features.*
 import io.ktor.freemarker.FreeMarker
 import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.server.engine.embeddedServer
+import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.nio.file.Path
 
@@ -69,12 +73,21 @@ fun Application.module(testing: Boolean = false) {
 
         }
 
+        get("/testPath"){
+            val conn = DbController().dbConnect()
+            var userSession: Table = Table("userSession")
+            val result = transaction(conn){
+                userSession.selectAll()
+            }
+            println(result)
+        }
+
         get("/auth") {
-            call.respondRedirect(OAuth2.Request().createUrl())
+            call.respondRedirect(OAuth2().getUrl())
         }
         get("/callback"){
             val code: String? = call.request.queryParameters["code"]
-            val auth = OAuth2.Response(contentType = "application/x-www-form-urlencoded", code = code)
+            OAuth2.Response(contentType = "application/x-www-form-urlencoded", code = code).postAuthenticate()
 
             call.respondRedirect("/")
         }

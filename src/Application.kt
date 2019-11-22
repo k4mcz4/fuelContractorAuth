@@ -31,12 +31,6 @@ import java.sql.Connection
 
 fun main(args: Array<String>): Unit = io.ktor.server.cio.EngineMain.main(args)
 
-/*fun main(){
-    val newRequest = OAuth2.Request().createUrl()
-    println(newRequest)
-}
-*/
-
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
@@ -54,11 +48,6 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
-    fun getRoot(path: String): String {
-        return System.getProperty("user.dir") + "/src" + path
-    }
-
-
 
     routing {
         get("/") {
@@ -70,15 +59,10 @@ fun Application.module(testing: Boolean = false) {
         }
 
         get("/testPath") {
-            val userSessionDb = DbController().dbConnect()
+            val test = DbController().getSecret()
 
-            transaction(userSessionDb) {
-                userSession.insert {
-
-                }
-            }
-
-
+            println(test.ClientId)
+            println(test.SecretKey)
         }
 
         get("/auth") {

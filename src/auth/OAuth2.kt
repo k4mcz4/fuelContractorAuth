@@ -1,19 +1,20 @@
 package com.fuelContractorAuth.auth
 
 
-import com.fuelContractorAuth.dataClasses.AuthResponse
+import com.fuelContractorAuth.DbController
+import com.fuelContractorAuth.UserSessionInsert
 import com.fuelContractorAuth.dataClasses.SecretModel
 import com.google.gson.Gson
 import java.io.DataOutputStream
-import java.io.File
 import java.net.URL
+import java.time.LocalDateTime
 import java.util.*
 import javax.net.ssl.HttpsURLConnection
 
 class OAuth2 {
 
     companion object {
-        val clientSecret: SecretModel = Gson().fromJson(SecretModel.secretFile, SecretModel::class.java)
+        val clientSecret: SecretModel = DbController().getSecret()
         const val redirectUri: String = "https://login.eveonline.com/oauth/authorize"
         const val callbackURL: String = "http://localhost:8080/callback"
         const val tokenAuthUrl: String = "https://login.eveonline.com/oauth/token"
@@ -51,7 +52,6 @@ class OAuth2 {
             return Base64.getEncoder().encodeToString(data)
         }
 
-
         fun postAuthenticate() {
             val connection = URL(tokenAuthUrl).openConnection() as HttpsURLConnection
             connection.requestMethod = "POST"
@@ -68,10 +68,17 @@ class OAuth2 {
 
             val text = connection.inputStream.use { it.reader().use { reader -> reader.readText() } }
 
-            println(text)
+            val userInsert = Gson().fromJson(text, UserSessionInsert::class.java)
+            userInsert.userId = "random_cookie"
+            userInsert.expiresAt = LocalDateTime.now().plusSeconds(userInsert.expires_in.toLong()).toString()
+            DbController().insertUserData(insertData = userInsert)
 
         }
+    }
+
+    fun refreshToken(clientId: String){
 
     }
+
 }
 

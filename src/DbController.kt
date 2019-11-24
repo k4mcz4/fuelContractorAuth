@@ -1,12 +1,19 @@
 package com.fuelContractorAuth
 
-import com.fuelContractorAuth.dataClasses.SecretModel
+import com.fuelContractorAuth.dataClasses.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
 
 class DbController {
+
+    private val conn = dbConnect()
+
+    private fun getRoot(path: String): String {
+        return System.getProperty("user.dir") + "/src" + path
+    }
+
     private fun dbConnect(): Database {
         val db = Database.connect(
             "jdbc:sqlite:${getRoot("\\auth\\tempData\\dbank.db")}",
@@ -16,74 +23,138 @@ class DbController {
         return db
     }
 
-    private fun getRoot(path: String): String {
-        return System.getProperty("user.dir") + "/src" + path
-    }
-
-    object UserSession : Table("userSession") {
-        val userId = varchar("userId", 100)
-        val accessToken = varchar("accessToken", 1000)
-        val tokenType = varchar("tokenType", 60)
-        val expiresIn = integer("expiresIn")
-        val refreshToken = varchar("refreshToken", 1000)
-        val assignedAt = varchar("assignedAt", 100)
-    }
-
-    object Secret : Table("superSecret") {
-        val clientId = varchar("ClientId", 1000)
-        val secretKey = varchar("SecretKey", 1000)
-    }
-
-    fun insertUserData(
-        conn: Database = dbConnect(),
-        table: UserSession = UserSession,
-        insertData: UserSessionModel
-    ) {
-        transaction(conn) {
-            table.insert {
-                it[accessToken] = insertData.access_token
-                it[tokenType] = insertData.token_type
-                it[expiresIn] = insertData.expires_in
-                it[refreshToken] = insertData.refresh_token
-                it[assignedAt] = insertData.expiresAt
-                it[userId] = insertData.userId
-            }
-        }
-    }
-
-    fun selectUserData(
-        conn: Database = dbConnect(),
-        table: UserSession = UserSession,
-        uniqueId: String
-    ) {
-
-        transaction(conn) {
-            table.select { UserSession.userId.eq(uniqueId) }.map {
-
-            }
-        }
-
-    }
-
     fun getSecret(): SecretModel {
-        val conn = dbConnect()
         val secretTable = Secret
         val query = transaction(conn) {
             secretTable.selectAll().map { SecretModel(it[secretTable.clientId], it[secretTable.secretKey]) }
         }
-
         return query[0]
+    }
+
+    fun insertTokenData(
+        token: TokenModel
+    ): Int {
+        token.setExpiration()
+        val table = TokenList
+        return transaction(conn) {
+            table.insert {
+                it[accessToken] = token.access_token
+                it[tokenType] = token.token_type
+                it[expiresIn] = token.expires_in
+                it[refreshToken] = token.refresh_token
+                it[assignedAt] = token.expiresAt
+            } get table.tokenId
+        }
+    }
+
+    fun insertCharacterData(
+        character: CharacterModel
+    ): Int {
+        val table = CharacterList
+        val charOwnerId = insertOwnerData(character.characterOwner)
+        return transaction(conn) {
+            table.insert {
+                it[characterId] = character.characterId
+                it[characterName] = character.characterName
+                it[expiresOn] = character.expiresOn
+                it[scopes] = character.scopes
+                it[tokenType] = character.tokenType
+                it[characterOwnerId] = charOwnerId
+                it[intellectualProperty] = character.intellectualProperty
+            } get table.uniqueCharId
+        }
+    }
+
+    private fun insertOwnerData(
+        owner: OwnerModel
+    ): Int {
+        val table = OwnerList
+
+        return transaction(conn) {
+            table.insert {
+                it[ownerHash] = owner.ownerHash
+            } get table.ownerId
+
+        }
+
+    }
+
+    fun insertCharacterOwnerConnection(
+        charOwner: CharacterTokenOwner
+    ) {
+        val table = CharacterTokenOwnerList
+
+        transaction(conn) {
+            table.insert {
+                it[characterId] = charOwner.uniqueCharId
+                it[tokenId] = charOwner.tokenId
+                it[ownerId] = charOwner.ownerId
+            }
+        }
+
+    }
+
+    fun updateToken(
+        tokenId: Int,
+        token: TokenModel
+    ) {
+        val table = TokenList
+        token.setExpiration()
+        transaction(conn) {
+            table.update({ table.tokenId eq tokenId }) {
+                it[accessToken] = token.access_token
+                it[tokenType] = token.token_type
+                it[expiresIn] = token.expires_in
+                it[refreshToken] = token.refresh_token
+                it[assignedAt] = token.expiresAt
+            }
+        }
+    }
+
+    fun loadOwnerData(
+        ownerId: Int
+    ): List<CharacterModel> {
+        val ownerTable = CharacterTokenOwnerList
+        val tokenTable = TokenList
+        val characterTable = CharacterList
+        val ownerHashTable = OwnerList
+        return transaction(conn) {
+            (ownerTable innerJoin tokenTable innerJoin characterTable innerJoin ownerHashTable).slice(
+                tokenTable.accessToken,
+                tokenTable.tokenType,
+                characterTable.characterId
+            ).select { ownerTable.ownerId eq ownerId }
+                .map {
+                    CharacterModel(
+                        uniqueCharId = it[characterTable.uniqueCharId],
+                        characterId = it[characterTable.characterId],
+                        characterName = it[characterTable.characterName],
+                        expiresOn = it[characterTable.expiresOn],
+                        scopes = it[characterTable.scopes],
+                        tokenType = it[characterTable.tokenType],
+                        characterOwner = OwnerModel(
+                            it[ownerHashTable.ownerId],
+                            it[ownerHashTable.ownerHash]
+                        ),
+                        token = TokenModel(
+                            tokenId = it[tokenTable.tokenId],
+                            access_token = it[tokenTable.accessToken],
+                            token_type = it[tokenTable.tokenType],
+                            expires_in = it[tokenTable.expiresIn],
+                            refresh_token = it[tokenTable.refreshToken]
+                        ),
+                        intellectualProperty = it[characterTable.intellectualProperty]
+                    )
+                }
+
+        }
+    }
+
+    fun isTokenValid(): Boolean {
+
+        return true
+
     }
 }
 
-
-data class UserSessionModel(
-    val access_token: String,
-    val token_type: String,
-    val expires_in: Int,
-    val refresh_token: String
-) {
-    var userId: String = ""
-    var expiresAt: String = ""
-}
 

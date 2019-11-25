@@ -119,11 +119,9 @@ class DbController {
         val characterTable = CharacterList
         val ownerHashTable = OwnerList
         return transaction(conn) {
-            (ownerTable innerJoin tokenTable innerJoin characterTable innerJoin ownerHashTable).slice(
-                tokenTable.accessToken,
-                tokenTable.tokenType,
-                characterTable.characterId
-            ).select { ownerTable.ownerId eq ownerId }
+            //(ownerTable innerJoin tokenTable innerJoin characterTable innerJoin ownerHashTable)
+            ownerTable.innerJoin(tokenTable).innerJoin(characterTable).innerJoin(ownerHashTable)
+                .select { ownerTable.ownerId eq ownerId }
                 .map {
                     CharacterModel(
                         uniqueCharId = it[characterTable.uniqueCharId],

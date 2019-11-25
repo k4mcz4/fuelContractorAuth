@@ -1,5 +1,6 @@
 package com.fuelContractorAuth.dataClasses
 
+import com.google.gson.annotations.SerializedName
 import java.time.LocalDateTime
 
 data class TokenModel(
@@ -16,17 +17,12 @@ data class TokenModel(
 }
 
 data class CharacterModel(
-    val uniqueCharId: Int,
-    val characterId: Int,
-    val characterName: String,
-    val expiresOn: String,
-    val scopes: String,
-    val tokenType: String,
-    val characterOwner: OwnerModel,
-    val token: TokenModel,
-    val intellectualProperty: String
+    var uniqueCharId: Int = 0,
+    @SerializedName("CharacterID") val characterId: Int,
+    @SerializedName("CharacterName") val characterName: String,
+    @SerializedName("ExpiresOn") val expiresOn: String,
+    @SerializedName("Scopes") val scopes: String,
+    var token: TokenModel?
 )
 
-data class OwnerModel(val ownerId: Int, val ownerHash: String)
-
-data class CharacterTokenOwner(val uniqueCharId: Int, val tokenId: Int, val ownerId: Int)
+data class Character(val uniqueCharId: Int, val tokenId: Int)

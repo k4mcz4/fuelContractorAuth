@@ -6,6 +6,8 @@ import io.ktor.routing.*
 import io.ktor.auth.*
 import com.fasterxml.jackson.databind.*
 import com.fuelContractorAuth.auth.OAuth2
+import com.fuelContractorAuth.dataClasses.CharacterModel
+import com.google.gson.Gson
 import freemarker.cache.ClassTemplateLoader
 import io.ktor.jackson.*
 import io.ktor.features.*
@@ -41,8 +43,8 @@ fun Application.module(testing: Boolean = false) {
 
         }
 
-        get("/test"){
-            println(OAuth2().getUrl())
+        get("/test") {
+
         }
 
 
@@ -51,14 +53,24 @@ fun Application.module(testing: Boolean = false) {
         }
         get("/callback") {
             val code: String? = call.request.queryParameters["code"]
-            OAuth2.PostRequest(code = code).postAuthenticate()
+            val data = OAuth2.PostRequest(code = code).runAuthenticationFlow().characterId
+            call.respondRedirect("/character/data=$data")
+        }
 
-            call.respondRedirect("/")
+        //TODO Absolutely unsafe. Create additional authorization Cookie + IP
+
+        get("/character/{user}") {
+            val userData = call.request.queryParameters["user"]
         }
     }
+
 }
 
-data class User(var name: String, var account: Int)
+data class User(var name: String, var account: Int) {
+    fun loadCharacterData() {
+
+    }
+}
 
 data class UserAssets(val assetName: String, val assetLocation: String)
 

@@ -51,57 +51,37 @@ class DbController {
         character: CharacterModel
     ): Int {
         val table = CharacterList
-        val charOwnerId = insertOwnerData(character.characterOwner)
         return transaction(conn) {
             table.insert {
                 it[characterId] = character.characterId
                 it[characterName] = character.characterName
                 it[expiresOn] = character.expiresOn
                 it[scopes] = character.scopes
-                it[tokenType] = character.tokenType
-                it[characterOwnerId] = charOwnerId
-                it[intellectualProperty] = character.intellectualProperty
             } get table.uniqueCharId
         }
     }
 
-    private fun insertOwnerData(
-        owner: OwnerModel
-    ): Int {
-        val table = OwnerList
-
-        return transaction(conn) {
-            table.insert {
-                it[ownerHash] = owner.ownerHash
-            } get table.ownerId
-
-        }
-
-    }
-
     fun insertCharacterOwnerConnection(
-        charOwner: CharacterTokenOwner
+        charToken: Character
     ) {
-        val table = CharacterTokenOwnerList
+        val table = CharacterTokenList
 
         transaction(conn) {
             table.insert {
-                it[characterId] = charOwner.uniqueCharId
-                it[tokenId] = charOwner.tokenId
-                it[ownerId] = charOwner.ownerId
+                it[characterId] = charToken.uniqueCharId
+                it[tokenId] = charToken.tokenId
             }
         }
 
     }
 
     fun updateToken(
-        tokenId: Int,
         token: TokenModel
     ) {
         val table = TokenList
         token.setExpiration()
         transaction(conn) {
-            table.update({ table.tokenId eq tokenId }) {
+            table.update({ table.tokenId eq token.tokenId }) {
                 it[accessToken] = token.access_token
                 it[tokenType] = token.token_type
                 it[expiresIn] = token.expires_in
@@ -111,43 +91,41 @@ class DbController {
         }
     }
 
-    fun loadOwnerData(
-        ownerId: Int
-    ): List<CharacterModel> {
-        val ownerTable = CharacterTokenOwnerList
-        val tokenTable = TokenList
-        val characterTable = CharacterList
-        val ownerHashTable = OwnerList
-        return transaction(conn) {
-            //(ownerTable innerJoin tokenTable innerJoin characterTable innerJoin ownerHashTable)
-            ownerTable.innerJoin(tokenTable).innerJoin(characterTable).innerJoin(ownerHashTable)
-                .select { ownerTable.ownerId eq ownerId }
-                .map {
-                    CharacterModel(
-                        uniqueCharId = it[characterTable.uniqueCharId],
-                        characterId = it[characterTable.characterId],
-                        characterName = it[characterTable.characterName],
-                        expiresOn = it[characterTable.expiresOn],
-                        scopes = it[characterTable.scopes],
-                        tokenType = it[characterTable.tokenType],
-                        characterOwner = OwnerModel(
-                            it[ownerHashTable.ownerId],
-                            it[ownerHashTable.ownerHash]
-                        ),
-                        token = TokenModel(
-                            tokenId = it[tokenTable.tokenId],
-                            access_token = it[tokenTable.accessToken],
-                            token_type = it[tokenTable.tokenType],
-                            expires_in = it[tokenTable.expiresIn],
-                            refresh_token = it[tokenTable.refreshToken]
-                        ),
-                        intellectualProperty = it[characterTable.intellectualProperty]
-                    )
-                }
+    /*
+        fun loadOwnerData(
+            ownerId: Int
+        ): List<CharacterModel> {
+            val ownerTable = CharacterTokenOwnerList
+            val tokenTable = TokenList
+            val characterTable = CharacterList
+            return transaction(conn) {
 
+                //TODO Some table names and cheaders changed. FIX IT
+
+                //(ownerTable innerJoin tokenTable innerJoin characterTable innerJoin ownerHashTable)
+                ownerTable.innerJoin(tokenTable).innerJoin(characterTable).innerJoin()
+                    .select { ownerTable eq ownerId }
+                    .map {
+                        CharacterModel(
+                            uniqueCharId = it[characterTable.uniqueCharId],
+                            characterId = it[characterTable.characterId],
+                            characterName = it[characterTable.characterName],
+                            expiresOn = it[characterTable.expiresOn],
+                            scopes = it[characterTable.scopes],
+                            tokenType = it[characterTable.tokenType],
+                            token = TokenModel(
+                                tokenId = it[tokenTable.tokenId],
+                                access_token = it[tokenTable.accessToken],
+                                token_type = it[tokenTable.tokenType],
+                                expires_in = it[tokenTable.expiresIn],
+                                refresh_token = it[tokenTable.refreshToken]
+                            )
+                        )
+                    }
+
+            }
         }
-    }
-
+    */
     fun isTokenValid(): Boolean {
 
         return true

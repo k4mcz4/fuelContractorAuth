@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+ <html>
+    <head>
+        <title>Authorization</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device=width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <#include "css/authPage.css">
+        <link rel="stylesheet"  type="text/css" href="css/authPage.css" />
+
+    </head>
+    <body>
+    <div id="conteiner">
+
+        <div id="loginBar">
+            <a href="/auth">Authenticate</a>
+        </div>
+        
+        <div id="header">
+            <div id="userName">${user.name}</div>
+            <div id="userAccBalance">${user.account}</div>
+        </div>
+        <div id="content">
+            <div id="navig">
+                    <h2 style="text-align: center;">Navigation</h2>
+                    <ul>
+                        <li><a href="">Orders</a></li>
+                        <li><a href="">Assets</a></li>
+                        <li><a href="">Transactions</a></li>
+                    </ul>
+            </div>
+            <div id="main">
+                <img id="MiningDrone" src="https://imageserver.eveonline.com/Type/43701_64.png">
+                <div id="column">
+                    <h4 id="text1" style=" margin-right: -200px;">Drones / Mining Drones /</h4>
+                    <h3 id="text2" style=" margin-right: 40px;">'Augmented' Ice Harvesting Drone</h3>
+                    <h4 id="text3" style=" margin-right: 40px; color: grey;">50 m3</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    </body>
+
+
+</html>

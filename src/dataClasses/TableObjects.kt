@@ -22,10 +22,15 @@ object CharacterList : Table("characterList") {
     val characterName = varchar("characterName", 200)
     val expiresOn = varchar("expiresOn", 100)
     val scopes = varchar("scopes", 1000)
-    val tokenType = varchar("tokenType", 100)
 }
 
 object CharacterTokenList : Table("charTokenList") {
     val tokenId = integer("tokenId")
     val characterId = integer("characterId")
+    val sessionId = integer("sessionId")
+}
+
+object SessionList : Table("sessionList"){
+    val sessionId = integer("sessionId").autoIncrement().primaryKey()
+    val sessionValue = varchar("sessionValue", 1000)
 }

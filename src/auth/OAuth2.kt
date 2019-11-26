@@ -5,6 +5,7 @@ import com.fuelContractorAuth.DbController
 import com.fuelContractorAuth.dataClasses.CharacterModel
 import com.fuelContractorAuth.dataClasses.TokenModel
 import com.fuelContractorAuth.dataClasses.SecretModel
+import com.fuelContractorAuth.dataClasses.SessionInsertModel
 import com.google.gson.Gson
 import java.io.DataOutputStream
 import java.io.IOException
@@ -41,7 +42,7 @@ class OAuth2 {
 
     class PostRequest(
         private val contentType: String = "application/x-www-form-urlencoded",
-        val code: String?
+        val code: String? = null
     ) {
         private val host: String = "login.eveonline.com"
         private var grantType: String = "authorization_code"
@@ -61,7 +62,7 @@ class OAuth2 {
             return "${tokenData.token_type} ${tokenData.access_token}"
         }
 
-        private fun setupRequest(
+        fun setupRequest(
             requestMethodSetup: String,
             authorizationProperty: String = encodedAuth(),
             hostType: String = host,
@@ -134,8 +135,22 @@ class OAuth2 {
             return characterData
         }
 
-        fun runAuthenticationFlow(): CharacterModel {
-            return getCharacterData(getToken())
+        fun runAuthenticationFlow(): String {
+
+            val token = getToken()
+            val char = getCharacterData(token)
+            val uuid = UUID.randomUUID().toString()
+
+            val sessionValue = DbController().insertSessionData(uuid)
+            DbController().insertCharacterSessionData(
+                SessionInsertModel(
+                    char.uniqueCharId,
+                    token.tokenId,
+                    sessionValue
+                )
+            )
+
+            return uuid
         }
     }
 

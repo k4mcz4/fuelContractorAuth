@@ -25,4 +25,8 @@ data class CharacterModel(
     var token: TokenModel?
 )
 
-data class Character(val uniqueCharId: Int, val tokenId: Int)
+data class SessionInsertModel(
+    @SerializedName("characterId") val uniqueCharId: Int,
+    val tokenId: Int,
+    val sessionId: Int
+)

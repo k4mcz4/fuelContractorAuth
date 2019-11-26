@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
+import java.util.*
 
 class DbController {
 
@@ -61,19 +62,6 @@ class DbController {
         }
     }
 
-    fun insertCharacterOwnerConnection(
-        charToken: Character
-    ) {
-        val table = CharacterTokenList
-
-        transaction(conn) {
-            table.insert {
-                it[characterId] = charToken.uniqueCharId
-                it[tokenId] = charToken.tokenId
-            }
-        }
-
-    }
 
     fun updateToken(
         token: TokenModel
@@ -91,46 +79,30 @@ class DbController {
         }
     }
 
-    /*
-        fun loadOwnerData(
-            ownerId: Int
-        ): List<CharacterModel> {
-            val ownerTable = CharacterTokenOwnerList
-            val tokenTable = TokenList
-            val characterTable = CharacterList
-            return transaction(conn) {
+    fun insertCharacterSessionData(sessionList: SessionInsertModel) {
+        val table = CharacterTokenList
 
-                //TODO Some table names and cheaders changed. FIX IT
-
-                //(ownerTable innerJoin tokenTable innerJoin characterTable innerJoin ownerHashTable)
-                ownerTable.innerJoin(tokenTable).innerJoin(characterTable).innerJoin()
-                    .select { ownerTable eq ownerId }
-                    .map {
-                        CharacterModel(
-                            uniqueCharId = it[characterTable.uniqueCharId],
-                            characterId = it[characterTable.characterId],
-                            characterName = it[characterTable.characterName],
-                            expiresOn = it[characterTable.expiresOn],
-                            scopes = it[characterTable.scopes],
-                            tokenType = it[characterTable.tokenType],
-                            token = TokenModel(
-                                tokenId = it[tokenTable.tokenId],
-                                access_token = it[tokenTable.accessToken],
-                                token_type = it[tokenTable.tokenType],
-                                expires_in = it[tokenTable.expiresIn],
-                                refresh_token = it[tokenTable.refreshToken]
-                            )
-                        )
-                    }
-
+        transaction(conn) {
+            table.insert {
+                it[sessionId] = sessionList.sessionId
+                it[characterId] = sessionList.uniqueCharId
+                it[tokenId] = sessionList.tokenId
             }
         }
-    */
-    fun isTokenValid(): Boolean {
+    }
 
-        return true
+    fun insertSessionData(uuid: String): Int {
+        val table = SessionList
+
+        return transaction(conn) {
+            table.insert {
+                it[sessionValue] = uuid
+            }
+        } get table.sessionId
 
     }
 }
+
+
 
 

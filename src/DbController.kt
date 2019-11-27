@@ -108,7 +108,7 @@ class DbController {
         val table = SessionList
 
         return transaction(conn) {
-            table.join(CharacterTokenList, JoinType.INNER, null, null){
+            table.join(CharacterTokenList, JoinType.INNER, null, null) {
                 table.sessionId eq CharacterTokenList.sessionId
             }
                 .slice(CharacterTokenList.tokenId, CharacterTokenList.characterId, CharacterTokenList.sessionId)
@@ -148,10 +148,10 @@ class DbController {
             }.first()
         }
         val date = LocalDateTime.parse(tokenData.expiresAt)
-        val formatted =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSSSS")
+        val formatted = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSSSS")
         val tokenExpiryDate = formatted.format(date)
         if (date < LocalDateTime.now()) {
-            tokenData = OAuth2.PostRequest().getRefreshTokenFromServer()
+            tokenData = OAuth2.PostRequest(code = tokenData.refresh_token).getRefreshTokenFromServer()
         }
 
 
@@ -159,30 +159,24 @@ class DbController {
 
     }
 
-    fun getCharacterData(characterId: Int, tokenData: TokenModel): CharacterModel {
+    fun getCharacterData(uniqueCharacterId: Int, tokenData: TokenModel): CharacterModel {
         val table = CharacterList
 
         return transaction(conn) {
-            table.slice(
-                table.characterId,
-                table.characterName,
-                table.expiresOn,
-                table.scopes
-            ).select {
-                table.uniqueCharId.eq(characterId)
+            table.select {
+                table.uniqueCharId.eq(uniqueCharacterId)
             }.map {
                 CharacterModel(
-                    characterId,
-                    it[table.characterId],
-                    it[table.characterName],
-                    it[table.expiresOn],
-                    it[table.scopes],
-                    tokenData
+                    uniqueCharId = uniqueCharacterId,
+                    characterId = it[table.characterId],
+                    characterName = it[table.characterName],
+                    expiresOn = it[table.expiresOn],
+                    scopes = it[table.scopes],
+                    token = tokenData
                 )
             }.first()
 
         }
-
     }
 }
 

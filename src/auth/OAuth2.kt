@@ -56,7 +56,7 @@ class OAuth2 {
             return Base64.getEncoder().encodeToString(data)
         }
 
-        private fun bearerToken(tokenData: TokenModel): String {
+        fun bearerToken(tokenData: TokenModel): String {
             //TODO Add new method to DbController for accessToken pickup
             return "${tokenData.token_type} ${tokenData.access_token}"
         }

@@ -18,7 +18,7 @@ data class TokenModel(
 
 data class CharacterModel(
     var uniqueCharId: Int = 0,
-    @SerializedName("CharacterID") val characterId: Int,
+    @SerializedName("CharacterID") var characterId: Int,
     @SerializedName("CharacterName") val characterName: String,
     @SerializedName("ExpiresOn") val expiresOn: String,
     @SerializedName("Scopes") val scopes: String,

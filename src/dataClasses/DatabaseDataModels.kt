@@ -5,10 +5,10 @@ import java.time.LocalDateTime
 
 data class TokenModel(
     var tokenId: Int = 0,
-    val access_token: String,
+    var access_token: String,
     val token_type: String,
-    val expires_in: Int,
-    val refresh_token: String,
+    var expires_in: Int,
+    var refresh_token: String,
     var expiresAt: String = ""
 ) {
     fun setExpiration() {
@@ -22,10 +22,10 @@ data class CharacterModel(
     @SerializedName("CharacterName") val characterName: String,
     @SerializedName("ExpiresOn") val expiresOn: String,
     @SerializedName("Scopes") val scopes: String,
-    var token: TokenModel?
+    var token: TokenModel
 )
 
-data class SessionInsertModel(
+data class SessionModel(
     @SerializedName("characterId") val uniqueCharId: Int,
     val tokenId: Int,
     val sessionId: Int

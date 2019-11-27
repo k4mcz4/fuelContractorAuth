@@ -5,10 +5,9 @@ import com.fuelContractorAuth.DbController
 import com.fuelContractorAuth.dataClasses.CharacterModel
 import com.fuelContractorAuth.dataClasses.TokenModel
 import com.fuelContractorAuth.dataClasses.SecretModel
-import com.fuelContractorAuth.dataClasses.SessionInsertModel
+import com.fuelContractorAuth.dataClasses.SessionModel
 import com.google.gson.Gson
 import java.io.DataOutputStream
-import java.io.IOException
 import java.net.URL
 import java.util.*
 import javax.net.ssl.HttpsURLConnection
@@ -62,7 +61,7 @@ class OAuth2 {
             return "${tokenData.token_type} ${tokenData.access_token}"
         }
 
-        fun setupRequest(
+        private fun setupRequest(
             requestMethodSetup: String,
             authorizationProperty: String = encodedAuth(),
             hostType: String = host,
@@ -83,7 +82,7 @@ class OAuth2 {
             return connection
         }
 
-        private fun getToken(isRefreshToken: Boolean = false): TokenModel {
+        private fun getTokenFromServer(isRefreshToken: Boolean = false): TokenModel {
             var param = "grant_type=$grantType&code=$code"
 
             if (isRefreshToken) {
@@ -111,11 +110,11 @@ class OAuth2 {
 
         }
 
-        fun getRefreshToken() {
-            getToken(true)
+        fun getRefreshTokenFromServer(): TokenModel {
+            return getTokenFromServer(true)
         }
 
-        private fun getCharacterData(tokenData: TokenModel): CharacterModel {
+        private fun getCharacterDataFromServer(tokenData: TokenModel): CharacterModel {
 
             val connectionGet =
                 setupRequest(
@@ -137,13 +136,16 @@ class OAuth2 {
 
         fun runAuthenticationFlow(): String {
 
-            val token = getToken()
-            val char = getCharacterData(token)
+            val token = getTokenFromServer()
+            val char = getCharacterDataFromServer(token)
+
+            //TODO Crosscheck if UUID is not duplicated
             val uuid = UUID.randomUUID().toString()
+
 
             val sessionValue = DbController().insertSessionData(uuid)
             DbController().insertCharacterSessionData(
-                SessionInsertModel(
+                SessionModel(
                     char.uniqueCharId,
                     token.tokenId,
                     sessionValue

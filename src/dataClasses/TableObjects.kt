@@ -8,7 +8,7 @@ object TokenList : Table("tokenList") {
     val tokenType = varchar("tokenType", 60)
     val expiresIn = integer("expiresIn")
     val refreshToken = varchar("refreshToken", 1000)
-    val assignedAt = varchar("assignedAt", 100)
+    val expirationDate = varchar("expirationDate", 100)
 }
 
 object Secret : Table("superSecret") {

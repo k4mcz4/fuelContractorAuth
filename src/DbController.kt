@@ -1,11 +1,13 @@
 package com.fuelContractorAuth
 
+import com.fuelContractorAuth.auth.OAuth2
 import com.fuelContractorAuth.dataClasses.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
-import java.util.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class DbController {
 
@@ -43,7 +45,7 @@ class DbController {
                 it[tokenType] = token.token_type
                 it[expiresIn] = token.expires_in
                 it[refreshToken] = token.refresh_token
-                it[assignedAt] = token.expiresAt
+                it[expirationDate] = token.expiresAt
             } get table.tokenId
         }
     }
@@ -74,12 +76,12 @@ class DbController {
                 it[tokenType] = token.token_type
                 it[expiresIn] = token.expires_in
                 it[refreshToken] = token.refresh_token
-                it[assignedAt] = token.expiresAt
+                it[expirationDate] = token.expiresAt
             }
         }
     }
 
-    fun insertCharacterSessionData(sessionList: SessionInsertModel) {
+    fun insertCharacterSessionData(sessionList: SessionModel) {
         val table = CharacterTokenList
 
         transaction(conn) {
@@ -99,6 +101,87 @@ class DbController {
                 it[sessionValue] = uuid
             }
         } get table.sessionId
+
+    }
+
+    fun getCharacterConnectionData(sessionId: String): List<SessionModel> {
+        val table = SessionList
+
+        return transaction(conn) {
+            table.join(CharacterTokenList, JoinType.INNER, null, null){
+                table.sessionId eq CharacterTokenList.sessionId
+            }
+                .slice(CharacterTokenList.tokenId, CharacterTokenList.characterId, CharacterTokenList.sessionId)
+                .select {
+                    table.sessionValue.eq(sessionId)
+                }.map {
+                    SessionModel(
+                        it[CharacterTokenList.characterId],
+                        it[CharacterTokenList.tokenId],
+                        it[CharacterTokenList.sessionId]
+                    )
+                }
+        }
+    }
+
+    fun getTokenData(tokenId: Int): TokenModel {
+        val table = TokenList
+
+        var tokenData = transaction(conn) {
+            table.slice(
+                table.accessToken,
+                table.tokenType,
+                table.expiresIn,
+                table.expirationDate,
+                table.refreshToken
+            ).select {
+                table.tokenId.eq(tokenId)
+            }.map {
+                TokenModel(
+                    tokenId,
+                    it[table.accessToken],
+                    it[table.tokenType],
+                    it[table.expiresIn],
+                    it[table.refreshToken],
+                    it[table.expirationDate]
+                )
+            }.first()
+        }
+        val date = LocalDateTime.parse(tokenData.expiresAt)
+        val formatted =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSSSS")
+        val tokenExpiryDate = formatted.format(date)
+        if (date < LocalDateTime.now()) {
+            tokenData = OAuth2.PostRequest().getRefreshTokenFromServer()
+        }
+
+
+        return tokenData
+
+    }
+
+    fun getCharacterData(characterId: Int, tokenData: TokenModel): CharacterModel {
+        val table = CharacterList
+
+        return transaction(conn) {
+            table.slice(
+                table.characterId,
+                table.characterName,
+                table.expiresOn,
+                table.scopes
+            ).select {
+                table.uniqueCharId.eq(characterId)
+            }.map {
+                CharacterModel(
+                    characterId,
+                    it[table.characterId],
+                    it[table.characterName],
+                    it[table.expiresOn],
+                    it[table.scopes],
+                    tokenData
+                )
+            }.first()
+
+        }
 
     }
 }

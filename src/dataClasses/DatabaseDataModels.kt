@@ -10,9 +10,9 @@ data class TokenModel(
     var expires_in: Int,
     var refresh_token: String,
     var expiresAt: String = ""
-) {
-    fun setExpiration() {
-        expiresAt = LocalDateTime.now().plusSeconds(expires_in.toLong()).toString()
+){
+    fun setExpiration(){
+        this.expiresAt.apply {  LocalDateTime.now().plusSeconds(expires_in.toLong()).toString() }
     }
 }
 

@@ -42,7 +42,7 @@ fun Application.module(testing: Boolean = false) {
 
     routing {
         get("/") {
-            //TODO Add auth button
+            call.respondRedirect("/character/")
         }
 
         get("/cookie") {
@@ -52,6 +52,12 @@ fun Application.module(testing: Boolean = false) {
         }
 
         get("/test"){
+            val sessionId: SampleSession? = call.sessions.get<SampleSession>()
+            if(sessionId?.value == null){
+                println("Wlasnie Cie przekierowalem")
+            } else {
+                println(sessionId.value)
+            }
 
 
         }
@@ -74,12 +80,12 @@ fun Application.module(testing: Boolean = false) {
         }
 
         //TODO Absolutely unsafe. Create additional authorization Cookie + IP
-        get("/character/{page}") {
-            val sessionId: String? = call.request.queryParameters["session_id"]
-            if(sessionId == null){
+        get("/character/") {
+            val sessionId: SampleSession? = call.sessions.get<SampleSession>()
+            if(sessionId?.value == null){
                 call.respondRedirect("/oops")
             } else {
-                val user = EsiApi(sessionId).loadData()
+                val user = EsiApi(sessionId.value).loadData()
                 call.respond(FreeMarkerContent("authPage.html", mapOf("user" to user), "e"))
             }
 

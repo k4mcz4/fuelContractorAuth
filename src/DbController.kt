@@ -37,7 +37,6 @@ class DbController {
     fun insertTokenData(
         token: TokenModel
     ): Int {
-        token.setExpiration()
         val table = TokenList
         return transaction(conn) {
             table.insert {
@@ -69,7 +68,6 @@ class DbController {
         token: TokenModel
     ) {
         val table = TokenList
-        token.setExpiration()
         transaction(conn) {
             table.update({ table.tokenId eq token.tokenId }) {
                 it[accessToken] = token.access_token

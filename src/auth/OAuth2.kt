@@ -99,6 +99,7 @@ class OAuth2 {
 
             val json = connectionPost.inputStream.use { it.reader().use { reader -> reader.readText() } }
             val tokenData = Gson().fromJson(json, TokenModel::class.java)
+            tokenData.setExpiration()
 
             if (isRefreshToken) {
                 DbController().updateToken(tokenData)

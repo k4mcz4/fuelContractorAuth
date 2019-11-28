@@ -41,7 +41,8 @@ class OAuth2 {
 
     class PostRequest(
         private val contentType: String = "application/x-www-form-urlencoded",
-        val code: String? = null
+        val code: String? = null,
+        val storedTokenId: Int = 0
     ) {
         private val host: String = "login.eveonline.com"
         private var grantType: String = "authorization_code"
@@ -99,10 +100,10 @@ class OAuth2 {
 
             val json = connectionPost.inputStream.use { it.reader().use { reader -> reader.readText() } }
             val tokenData = Gson().fromJson(json, TokenModel::class.java)
-            tokenData.setExpiration()
+            tokenData.expiresAt = tokenData.setExpiration()
 
             if (isRefreshToken) {
-                DbController().updateToken(tokenData)
+                DbController().updateToken(tokenData, storedTokenId)
             } else {
                 tokenData.tokenId = DbController().insertTokenData(tokenData)
             }

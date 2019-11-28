@@ -65,11 +65,12 @@ class DbController {
 
 
     fun updateToken(
-        token: TokenModel
+        token: TokenModel,
+        storedTokenId: Int
     ) {
         val table = TokenList
         transaction(conn) {
-            table.update({ table.tokenId eq token.tokenId }) {
+            table.update({ table.tokenId eq storedTokenId }) {
                 it[accessToken] = token.access_token
                 it[tokenType] = token.token_type
                 it[expiresIn] = token.expires_in
@@ -149,7 +150,7 @@ class DbController {
         val formatted = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSSSS")
         val tokenExpiryDate = formatted.format(date)
         if (date < LocalDateTime.now()) {
-            tokenData = OAuth2.PostRequest(code = tokenData.refresh_token).getRefreshTokenFromServer()
+            tokenData = OAuth2.PostRequest(code = tokenData.refresh_token, storedTokenId = tokenData.tokenId).getRefreshTokenFromServer()
         }
 
 

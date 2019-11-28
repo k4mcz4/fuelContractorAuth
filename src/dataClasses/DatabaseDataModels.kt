@@ -11,8 +11,8 @@ data class TokenModel(
     var refresh_token: String,
     var expiresAt: String = ""
 ){
-    fun setExpiration(){
-        this.expiresAt.apply {  LocalDateTime.now().plusSeconds(expires_in.toLong()).toString() }
+    fun setExpiration(): String{
+        return LocalDateTime.now().plusSeconds(expires_in.toLong()).toString()
     }
 }
 

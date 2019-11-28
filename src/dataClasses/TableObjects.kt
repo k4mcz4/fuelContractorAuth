@@ -8,7 +8,7 @@ object TokenList : Table("tokenList") {
     val tokenType = varchar("tokenType", 60)
     val expiresIn = integer("expiresIn")
     val refreshToken = varchar("refreshToken", 1000)
-    val assignedAt = varchar("assignedAt", 100)
+    val expirationDate = varchar("expirationDate", 100)
 }
 
 object Secret : Table("superSecret") {
@@ -22,18 +22,15 @@ object CharacterList : Table("characterList") {
     val characterName = varchar("characterName", 200)
     val expiresOn = varchar("expiresOn", 100)
     val scopes = varchar("scopes", 1000)
-    val tokenType = varchar("tokenType", 100)
-    val characterOwnerId = integer("characterOwnerId")
-    val intellectualProperty = varchar("intellectualProperty", 100)
 }
 
-object OwnerList : Table("ownerList") {
-    val ownerId = integer("ownerId").autoIncrement().primaryKey()
-    val ownerHash = varchar("ownerHash", 1000)
-}
-
-object CharacterTokenOwnerList : Table("charTokenOwnerList") {
+object CharacterTokenList : Table("charTokenList") {
     val tokenId = integer("tokenId")
     val characterId = integer("characterId")
-    val ownerId = integer("ownerId")
+    val sessionId = integer("sessionId")
+}
+
+object SessionList : Table("sessionList"){
+    val sessionId = integer("sessionId").autoIncrement().primaryKey()
+    val sessionValue = varchar("sessionValue", 1000)
 }

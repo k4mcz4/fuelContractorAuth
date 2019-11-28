@@ -1,13 +1,14 @@
 package com.fuelContractorAuth.dataClasses
 
+import com.google.gson.annotations.SerializedName
 import java.time.LocalDateTime
 
 data class TokenModel(
     var tokenId: Int = 0,
-    val access_token: String,
+    var access_token: String,
     val token_type: String,
-    val expires_in: Int,
-    val refresh_token: String,
+    var expires_in: Int,
+    var refresh_token: String,
     var expiresAt: String = ""
 ) {
     fun setExpiration() {
@@ -16,17 +17,16 @@ data class TokenModel(
 }
 
 data class CharacterModel(
-    val uniqueCharId: Int,
-    val characterId: Int,
-    val characterName: String,
-    val expiresOn: String,
-    val scopes: String,
-    val tokenType: String,
-    val characterOwner: OwnerModel,
-    val token: TokenModel,
-    val intellectualProperty: String
+    var uniqueCharId: Int = 0,
+    @SerializedName("CharacterID") var characterId: Int,
+    @SerializedName("CharacterName") val characterName: String,
+    @SerializedName("ExpiresOn") val expiresOn: String,
+    @SerializedName("Scopes") val scopes: String,
+    var token: TokenModel
 )
 
-data class OwnerModel(val ownerId: Int, val ownerHash: String)
-
-data class CharacterTokenOwner(val uniqueCharId: Int, val tokenId: Int, val ownerId: Int)
+data class SessionModel(
+    @SerializedName("characterId") val uniqueCharId: Int,
+    val tokenId: Int,
+    val sessionId: Int
+)

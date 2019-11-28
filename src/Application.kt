@@ -76,7 +76,7 @@ fun Application.module(testing: Boolean = false) {
 
             //TODO Change it
             call.sessions.set(SampleSession(name = "TestSession", value = data))
-            call.respondRedirect("/character/page?session_id=$data")
+            call.respondRedirect("/character")
         }
 
         //TODO Absolutely unsafe. Create additional authorization Cookie + IP

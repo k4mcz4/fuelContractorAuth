@@ -12,6 +12,11 @@ import javax.net.ssl.HttpsURLConnection
 
 class EsiApi(private val sessionId: String) {
 
+    val urlFirstPart = "https://esi.evetech.net/latest/"
+    val componentName = ""
+    val characterId = ""
+    val corporationId = ""
+
     private fun fetchCharacterData(): CharacterModel {
         val userData = DbController().getCharacterConnectionData(sessionId).first()
         val tokenData = DbController().getTokenData(userData.tokenId)
@@ -31,7 +36,6 @@ class EsiApi(private val sessionId: String) {
     }
 
     fun getWalletData(characterData: CharacterModel): WalletBalance {
-        val properties = "datasource=tranquility"
         val url =
             "https://esi.evetech.net/latest/characters/${characterData.characterId}/wallet/?datasource=tranquility"
 

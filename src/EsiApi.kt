@@ -24,7 +24,7 @@ class EsiApi(private val sessionId: String) {
         return DbController().getCharacterData(userData.uniqueCharId, tokenData)
     }
 
-    fun setupGetRequest(url: String, tokenData: TokenModel): HttpsURLConnection {
+    private fun setupGetRequest(url: String, tokenData: TokenModel): HttpsURLConnection {
         val connection = URL(url).openConnection() as HttpsURLConnection
         connection.requestMethod = "GET"
         connection.addRequestProperty("Authorization", OAuth2.PostRequest().bearerToken(tokenData))

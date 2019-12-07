@@ -1,20 +1,51 @@
 package com.fuelContractorAuth.apiQuery
 
-class test {
-    fun test() {
-        println()
-    }
+import com.fuelContractorAuth.dataClasses.CharacterModel
+
+
+
+
+enum class Modules {
+    character,
+    corporation;
 }
 
-enum class ModuleParameterValues(val moduleName: String, val moduleParam: ModuleParam) {
-    CHARACTER("character", ModuleParam(listOf("")))
+enum class CharacterFirstParameters {
 
+    bookmarks,
+    calendar,
+    agents_research,
+    blueprints,
+    contracts,
+    mining,
+    mail,
+    orders,
+    wallet,
+    industry,
+    assets;
 }
 
-data class ModuleParam(val param: List<String>) {
-
+enum class SecondParameters {
+    transactions,
+    locations,
+    names,
+    jobs,
+    journal,
+    extractions;
 }
 
-enum class character {
-    assets, bookmarks, calendar, agents_research, blueprints, contracts, industry, mining, mail, orders, wallet
+enum class CorporationFirstParameters {
+    bookmarks,
+    contracts,
+    blueprints,
+    divisions,
+    facilities,
+    members,
+    roles,
+    shareholders,
+    structures;
 }
+
+
+
+

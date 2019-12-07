@@ -30,3 +30,10 @@ data class SessionModel(
     val tokenId: Int,
     val sessionId: Int
 )
+
+data class CorporationModel(
+    var uniqueCorpId: Int = 0,
+    @SerializedName("CorporationId") val corporationId: Int
+)
+
+data class PageContent(val character: String)

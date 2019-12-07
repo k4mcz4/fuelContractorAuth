@@ -11,7 +11,12 @@ import io.ktor.jackson.*
 import io.ktor.features.*
 import io.ktor.freemarker.FreeMarker
 import io.ktor.freemarker.FreeMarkerContent
+import io.ktor.http.content.files
+import io.ktor.http.content.resource
+import io.ktor.http.content.static
+import io.ktor.http.content.staticRootFolder
 import io.ktor.sessions.*
+import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -41,8 +46,21 @@ fun Application.module(testing: Boolean = false) {
 
 
     routing {
+        //Setting routing for Static content
+        static("/static"){
+            staticRootFolder = File("resources/templates")
+            files("authButtons")
+        }
+
         get("/") {
-            call.respondRedirect("/character/")
+            val user = User("a",1)
+            call.respond(FreeMarkerContent("authPage.html",mapOf("user" to user),"e"))
+        }
+
+        get("/test1"){
+            val user = User("a",1)
+            println("Ktos wbil")
+            call.respond(FreeMarkerContent("dashboard.html",mapOf("user" to user),"e"))
         }
 
         get("/cookie") {
@@ -86,7 +104,7 @@ fun Application.module(testing: Boolean = false) {
                 call.respondRedirect("/oops")
             } else {
                 val user = EsiApi(sessionId.value).loadData()
-                call.respond(FreeMarkerContent("authPage.html", mapOf("user" to user), "e"))
+                call.respond(FreeMarkerContent("dashbord.html", mapOf("user" to user), "e"))
             }
 
         }

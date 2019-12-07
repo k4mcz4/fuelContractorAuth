@@ -7,15 +7,10 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class DbController {
 
     private val conn = dbConnect()
-
-    private fun getRoot(path: String): String {
-        return System.getProperty("user.dir") + "/src" + path
-    }
 
     private fun dbConnect(): Database {
         val db = Database.connect(
@@ -26,12 +21,90 @@ class DbController {
         return db
     }
 
+    private fun getRoot(path: String): String {
+        return System.getProperty("user.dir") + "/src" + path
+    }
+
     fun getSecret(): SecretModel {
         val secretTable = Secret
-        val query = transaction(conn) {
-            secretTable.selectAll().map { SecretModel(it[secretTable.clientId], it[secretTable.secretKey]) }
+        return transaction(conn) {
+            secretTable.selectAll().map { SecretModel(it[secretTable.clientId], it[secretTable.secretKey]) }.first()
         }
-        return query[0]
+    }
+
+    fun getCharacterConnectionData(sessionId: String): List<SessionModel> {
+        val table = SessionList
+
+        return transaction(conn) {
+            table.join(CharacterTokenList, JoinType.INNER, null, null) {
+                table.sessionId eq CharacterTokenList.sessionId
+            }
+                .slice(CharacterTokenList.tokenId, CharacterTokenList.characterId, CharacterTokenList.sessionId)
+                .select {
+                    table.sessionValue.eq(sessionId)
+                }.map {
+                    SessionModel(
+                        it[CharacterTokenList.characterId],
+                        it[CharacterTokenList.tokenId],
+                        it[CharacterTokenList.sessionId]
+                    )
+                }
+        }
+    }
+
+    fun getTokenData(tokenId: Int): TokenModel {
+        val table = TokenList
+
+        var tokenData = transaction(conn) {
+            table.slice(
+                table.accessToken,
+                table.tokenType,
+                table.expiresIn,
+                table.expirationDate,
+                table.refreshToken
+            ).select {
+                table.tokenId.eq(tokenId)
+            }.map {
+                TokenModel(
+                    tokenId,
+                    it[table.accessToken],
+                    it[table.tokenType],
+                    it[table.expiresIn],
+                    it[table.refreshToken],
+                    it[table.expirationDate]
+                )
+            }.first()
+        }
+        val date = LocalDateTime.parse(tokenData.expiresAt)
+
+        if (date < LocalDateTime.now()) {
+            tokenData = OAuth2.PostRequest(code = tokenData.refresh_token, storedTokenId = tokenData.tokenId)
+                .getRefreshTokenFromServer()
+        }
+
+        return tokenData
+
+    }
+
+    fun getCharacterData(uniqueCharacterId: Int, tokenData: TokenModel): CharacterModel {
+        val table = CharacterList
+
+        return transaction(conn) {
+            table.select {
+                table.uniqueCharId.eq(uniqueCharacterId)
+            }.map {
+                CharacterModel(
+                    uniqueCharId = uniqueCharacterId,
+                    characterId = it[table.characterId],
+                    characterName = it[table.characterName],
+                    expiresOn = it[table.expiresOn],
+                    scopes = it[table.scopes],
+                    token = tokenData
+                )
+            }.first()
+
+        }
+
     }
 
     fun insertTokenData(
@@ -103,78 +176,41 @@ class DbController {
 
     }
 
-    fun getCharacterConnectionData(sessionId: String): List<SessionModel> {
-        val table = SessionList
+    fun validateCharacterTokenData(char: CharacterModel, sessionValue: Int) {
+        val table = CharacterTokenList
 
-        return transaction(conn) {
-            table.join(CharacterTokenList, JoinType.INNER, null, null) {
-                table.sessionId eq CharacterTokenList.sessionId
-            }
-                .slice(CharacterTokenList.tokenId, CharacterTokenList.characterId, CharacterTokenList.sessionId)
+        val session = transaction(conn) {
+            table.join(CharacterList,  JoinType.INNER)
+                .slice(
+                    CharacterTokenList.characterId,
+                    CharacterTokenList.tokenId,
+                    CharacterTokenList.sessionId
+                )
                 .select {
-                    table.sessionValue.eq(sessionId)
+                    table.characterId.eq(char.characterId)
                 }.map {
                     SessionModel(
-                        it[CharacterTokenList.characterId],
-                        it[CharacterTokenList.tokenId],
-                        it[CharacterTokenList.sessionId]
+                        uniqueCharId = it[CharacterTokenList.characterId],
+                        tokenId = it[CharacterTokenList.tokenId],
+                        sessionId = it[CharacterTokenList.sessionId]
                     )
-                }
+                }.lastOrNull()
         }
-    }
 
-    fun getTokenData(tokenId: Int): TokenModel {
-        val table = TokenList
-
-        var tokenData = transaction(conn) {
-            table.slice(
-                table.accessToken,
-                table.tokenType,
-                table.expiresIn,
-                table.expirationDate,
-                table.refreshToken
-            ).select {
-                table.tokenId.eq(tokenId)
-            }.map {
-                TokenModel(
-                    tokenId,
-                    it[table.accessToken],
-                    it[table.tokenType],
-                    it[table.expiresIn],
-                    it[table.refreshToken],
-                    it[table.expirationDate]
+        when (session) {
+            null -> {
+                insertCharacterSessionData(
+                    SessionModel(
+                        insertCharacterData(char),
+                        insertTokenData(char.token),
+                        sessionValue
+                    )
                 )
-            }.first()
-        }
-        val date = LocalDateTime.parse(tokenData.expiresAt)
-        val formatted = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSSSS")
-        val tokenExpiryDate = formatted.format(date)
-        if (date < LocalDateTime.now()) {
-            tokenData = OAuth2.PostRequest(code = tokenData.refresh_token, storedTokenId = tokenData.tokenId).getRefreshTokenFromServer()
-        }
-
-
-        return tokenData
-
-    }
-
-    fun getCharacterData(uniqueCharacterId: Int, tokenData: TokenModel): CharacterModel {
-        val table = CharacterList
-
-        return transaction(conn) {
-            table.select {
-                table.uniqueCharId.eq(uniqueCharacterId)
-            }.map {
-                CharacterModel(
-                    uniqueCharId = uniqueCharacterId,
-                    characterId = it[table.characterId],
-                    characterName = it[table.characterName],
-                    expiresOn = it[table.expiresOn],
-                    scopes = it[table.scopes],
-                    token = tokenData
-                )
-            }.first()
-
+            }
+            else -> {
+                insertCharacterSessionData(session)
+                updateToken(char.token, session.tokenId)
+            }
         }
     }
 }

@@ -53,12 +53,12 @@ fun Application.module(testing: Boolean = false) {
         }
 
         get("/") {
-            val user = User("a",1)
+            val user = User("Kamil Czar",1000000)
             call.respond(FreeMarkerContent("authPage.html",mapOf("user" to user),"e"))
         }
 
         get("/test1"){
-            val user = User("a",1)
+            val user = User("Kamil Czar",1000000)
             println("Ktos wbil")
             call.respond(FreeMarkerContent("dashboard.html",mapOf("user" to user),"e"))
         }

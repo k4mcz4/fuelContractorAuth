@@ -1,4 +1,4 @@
-<style type="text/css"
+<style type="text/css">
 @import url(//db.onlinewebfonts.com/c/557661ea24d10fa4d2d85f60f04411d8?family=Shentox);
 body {
     background-color: #545759;
@@ -78,10 +78,6 @@ body {
     background-color: #43464b;
     color: white;
     height: 100px;
-    border-bottom: 1px;
-    border: 2px;
-    border-radius: 0px;
-    margin-bottom: 0px;
 }
 
 #main {
@@ -93,9 +89,6 @@ body {
     background-color: #bcb9b4;
     width: inherit;
     height: 700px;
-    border-bottom: 1px;
-    border: 2px;
-    border-radius: 0px;
 }
 
 

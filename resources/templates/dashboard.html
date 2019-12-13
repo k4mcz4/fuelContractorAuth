@@ -30,16 +30,19 @@
         <div id="main">
             <div id="display">
                 <#list user.stationData as station>
+                <#assign x = station.typeId>
                 <div class="assetCard">
-                    <div id="stationPhoto">PHOTO</div>
+                    <div id="stationPhoto">
+                        <img id="photo" src="https://images.evetech.net/types/${x?c}/icon?size=64&tenant=tranquility">
+                    </div>
                     <div id="stationDetails">
-                        <div class="stationCardDetails">${station.itemId}</div>
+                        <div class="stationCardDetails">${station.typeId}</div>
                         <div class="stationCardDetails">${station.locationFlag}</div>
                     </div>
 
                     <div id="stationFuelDetails">
                         <div class="stationCardDetails">${station.quantity}</div>
-                        <div class="stationCardDetails">${station.typeId}</div>
+                        <div class="stationCardDetails">${station.locationType}</div>
                     </div>
                 </div>
                 

@@ -1,21 +1,28 @@
 <style type="text/css">
 @import url(//db.onlinewebfonts.com/c/557661ea24d10fa4d2d85f60f04411d8?family=Shentox);
-body {
-    background-color: #545759;
-    width: 100%;
+html, body {
+    background-color: #b9b9b9;
+    margin: 0;
+    padding: 0;
 }
 
 #navig {
     background-color: #36383c;
     height: 800px;
+    width: 40px;
     flex: 0 0 40px;
     display: flex;
     flex-direction: column;
-    transition: 0.5s;
+    transition: 0.2s;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 3;
 }
 
-#navig a:hover{
-    color: red;
+#container {
+    width: auto;
+    position: fixed;
 }
 
 #openNavi{
@@ -35,7 +42,7 @@ body {
 }
 
 #navig button:hover{
-    background-color: #545759;
+    background-color: red;
 }
 
 #navig button:active{
@@ -60,15 +67,49 @@ body {
 
 #main-flex-container{
     display: flex;
-    width: 100%;
-    height: 100px;
+    position: relative;
+    height: auto;
+    padding: 0;
+    margin: 0;
 }
 
+.assetCard{
+    position: relative;
+    padding: 5px;
+    margin: 10px;
+    width: auto;
+    height: 50px;
+    background-color: #f4f4f4;
+    text-align: center;
+    display: flex;
+}
+
+#stationPhoto {
+    margin-top: 15px;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+#stationDetails {
+    text-align: left;
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
+#stationFuelDetails {
+    text-align: left;
+    margin-top: 5px;
+    margin-left: 20px;
+}
 
 
 
 #conteiner {
     width: 100%;
+    height: 100%;
+    padding-left: 40px;
+    opacity: 1;
+    transition: 0.2s;
 }
 
 #flex-header {
@@ -78,17 +119,30 @@ body {
     background-color: #43464b;
     color: white;
     height: 100px;
+    position: fixed;
+    top: 0;
+    left: 40px;
+    z-index: 2;
+    transition: 0.2s;
 }
 
 #main {
-    
+    width: 100%;
+    top: 0;
 }
 
+ul {
+    margin: 0;
+}
 
 #display {
-    background-color: #bcb9b4;
-    width: inherit;
-    height: 700px;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    margin-top: 100px;
+    z-index: 1;
 }
 
 
@@ -106,8 +160,27 @@ body {
     position: relative;
     width: 100%;
     margin-top: 34px;
-    margin-right: 34px;
+    margin-right: 45px;
     text-align: right;
     font-size: 20px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }
 </style>

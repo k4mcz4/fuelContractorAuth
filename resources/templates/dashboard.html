@@ -1,48 +1,71 @@
 <!DOCTYPE html>
- <html>
-    <head>
-        <title>Dashboard</title>
-        <meta charset="UTF-8">
-        <!--<meta name="viewport" content="width=device=width, initial-scale=1.0">-->
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="stylesheet"  type="text/css" href="./css/dashboard.css" />
-        <#include "css/dashboard.css"/>
-    </head>
-    <body>
-        <div id="main-flex-container">
-            <div id="navig">
-                <button id="openNavi">DO!</button>
-                <button id="b1" class="sideButtons">B1</button>
-                <button id="b2" class="sideButtons">B2</button>
-                <button id="b3" class="sideButtons">B3</button>
-                <button id="b4" class="sideButtons">B4</button>
-                <button id="b5" class="sideButtons">B5</button>
-                <button id="b6" class="sideButtons">B6</button>
-            </div>
-            <div id="conteiner">
+<html>
+<head>
+    <title>Dashboard</title>
+    <meta charset="UTF-8">
+    <!--<meta name="viewport" content="width=device=width, initial-scale=1.0">-->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script type="text/javascript" src="static/jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/dashboard.css"/>
+    <#include "css/dashboard.css"/>
+</head>
+<body>
+<div id="main-flex-container">
+    <div id="navig">
+        <button id="openNavi">DO!</button>
+        <button id="b1" class="sideButtons">B1</button>
+        <button id="b2" class="sideButtons">B2</button>
+        <button id="b3" class="sideButtons">B3</button>
+        <button id="b4" class="sideButtons">B4</button>
+        <button id="b5" class="sideButtons">B5</button>
+        <button id="b6" class="sideButtons">B6</button>
+    </div>
+    <div id="conteiner">
 
-                <div id="flex-header">
-                    <div id="userName">${user.name}</div>
-                    <div id="userAccBalance">${user.account}</div>
-                </div>
-
-                <div id="main">
-                    <div id="display"></div>
-                </div>
-
-            </div>
+        <div id="flex-header">
+            <div id="userName">${user.name}</div>
+            <div id="userAccBalance">${user.account} ISK</div>
         </div>
-        
-    </body>
-     <script>
+
+        <div id="main">
+            <div id="display">
+                <#list user.stationData as station>
+                <div class="assetCard">
+                    <div id="stationPhoto">PHOTO</div>
+                    <div id="stationDetails">
+                        <div class="stationCardDetails">${station.itemId}</div>
+                        <div class="stationCardDetails">${station.locationFlag}</div>
+                    </div>
+
+                    <div id="stationFuelDetails">
+                        <div class="stationCardDetails">${station.quantity}</div>
+                        <div class="stationCardDetails">${station.typeId}</div>
+                    </div>
+                </div>
+                
+            </#list>
+        </div>
+    </div>
+
+</div>
+</div>
+
+</body>
+<script>
+         
+         
          document.getElementById("openNavi").addEventListener("click", toggleNav);
          
          function openNav(){
              document.getElementById("navig").style.flex = "0 0 180px";
+             document.getElementById("navig").style.width = "180px";
+             document.getElementById("conteiner").style.opacity = "0.3";
          }
          
          function closeNav(){
              document.getElementById("navig").style.flex = "0 0 40px";
+             document.getElementById("navig").style.width = "40px";
+             document.getElementById("conteiner").style.opacity = "1";
          }
          
          function toggleNav(){
@@ -73,7 +96,9 @@
              }
          }
          
-     </script>
+
+
+</script>
 
 
 </html>

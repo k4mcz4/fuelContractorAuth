@@ -2,9 +2,6 @@ package com.fuelContractorAuth.apiQuery
 
 import com.fuelContractorAuth.dataClasses.CharacterModel
 
-
-
-
 enum class Modules {
     character,
     corporation;

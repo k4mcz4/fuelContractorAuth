@@ -14,7 +14,7 @@ class DbController {
 
     private fun dbConnect(): Database {
         val db = Database.connect(
-            "jdbc:sqlite:${getRoot("\\auth\\tempData\\dbank.db")}",
+            "jdbc:sqlite:${getRoot("\\dataStore\\dbank.db")}",
             driver = "org.sqlite.JDBC"
         )
         TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
@@ -180,7 +180,7 @@ class DbController {
         val table = CharacterTokenList
 
         val session = transaction(conn) {
-            table.join(CharacterList,  JoinType.INNER)
+            table
                 .slice(
                     CharacterTokenList.characterId,
                     CharacterTokenList.tokenId,

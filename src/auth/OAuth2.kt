@@ -2,10 +2,7 @@ package com.fuelContractorAuth.auth
 
 
 import com.fuelContractorAuth.DbController
-import com.fuelContractorAuth.dataClasses.CharacterModel
-import com.fuelContractorAuth.dataClasses.TokenModel
-import com.fuelContractorAuth.dataClasses.SecretModel
-import com.fuelContractorAuth.dataClasses.SessionModel
+import com.fuelContractorAuth.dataClasses.*
 import com.google.gson.Gson
 import java.io.DataOutputStream
 import java.net.URL
@@ -102,6 +99,7 @@ class OAuth2 {
             val tokenData = Gson().fromJson(json, TokenModel::class.java)
             tokenData.expiresAt = tokenData.setExpiration()
 
+            //TODO Remove and move out
             if (isRefreshToken) {
                 DbController().updateToken(tokenData, storedTokenId)
             } else {
@@ -109,12 +107,8 @@ class OAuth2 {
             }
 
             return tokenData
-
         }
 
-        fun getRefreshTokenFromServer(): TokenModel {
-            return getTokenFromServer(true)
-        }
 
         private fun getCharacterDataFromServer(tokenData: TokenModel): CharacterModel {
 
@@ -131,32 +125,39 @@ class OAuth2 {
             val characterData = Gson().fromJson(json, CharacterModel::class.java)
             characterData.token = tokenData
 
-            characterData.uniqueCharId = DbController().insertCharacterData(characterData)
-
             return characterData
+        }
+
+        fun getRefreshTokenFromServer(): TokenModel {
+            return getTokenFromServer(true)
         }
 
         fun runAuthenticationFlow(): String {
 
             val token = getTokenFromServer()
             val char = getCharacterDataFromServer(token)
-
-            //TODO Crosscheck if UUID is not duplicated
             val uuid = UUID.randomUUID().toString()
 
-
             val sessionValue = DbController().insertSessionData(uuid)
-            DbController().insertCharacterSessionData(
-                SessionModel(
-                    char.uniqueCharId,
-                    token.tokenId,
-                    sessionValue
-                )
-            )
+
+
+            DbController().validateCharacterTokenData(char, sessionValue)
 
             return uuid
         }
-    }
 
+
+        fun insertCharTokenData(char: CharacterModel, sessionId: Int){
+            DbController().insertCharacterSessionData(
+                SessionModel(
+                    char.uniqueCharId,
+                    char.token.tokenId,
+                    sessionId
+                )
+            )
+        }
+
+
+    }
 }
 

@@ -33,4 +33,5 @@ object CharacterTokenList : Table("charTokenList") {
 object SessionList : Table("sessionList"){
     val sessionId = integer("sessionId").autoIncrement().primaryKey()
     val sessionValue = varchar("sessionValue", 1000)
+    val sessionExpires = varchar("sessionExpires", 200)
 }

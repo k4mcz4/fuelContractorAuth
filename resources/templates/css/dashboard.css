@@ -1,0 +1,191 @@
+<style type="text/css">
+@import url(//db.onlinewebfonts.com/c/557661ea24d10fa4d2d85f60f04411d8?family=Shentox);
+html, body {
+    background-color: #b9b9b9;
+    margin: 0;
+    padding: 0;
+}
+
+#navig {
+    background-color: #36383c;
+    height: 100%;
+    width: 40px;
+    flex: 0 0 40px;
+    display: flex;
+    flex-direction: column;
+    transition: 0.2s;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 3;
+}
+
+#container {
+    width: auto;
+    position: fixed;
+}
+
+#openNavi{
+    font-family: Shentox;
+    height: 100px;
+    width: 100%;
+    color: white;
+    vertical-align: middle;
+    line-height: 100px;
+    color: white;
+    background-color: #36383c;
+    outline: none;
+    border: none;
+}
+.button{
+    outline: none;
+}
+
+#navig button:hover{
+    background-color: red;
+}
+
+#navig button:active{
+    background-color: #36383c;
+}
+
+
+.sideButtons {
+    font-family: Shentox;
+    width: 100%;
+    height: 50px;
+    color: white;
+    line-height: 50px;
+    transition: 0.2s;
+    border: none;
+    background-color: #36383c;
+    padding-left: 12px;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+}
+
+#main-flex-container{
+    display: flex;
+    position: relative;
+    height: auto;
+    padding: 0;
+    margin: 0;
+}
+
+.assetCard{
+    position: relative;
+    padding: 5px;
+    margin: 3px;
+    margin-left: 4px;
+    width: auto;
+    height: 65px;
+    background-color: #f4f4f4;
+    text-align: center;
+    display: flex;
+}
+
+#stationPhoto {
+    top: 0;
+}
+
+#photo{
+    position: relative;
+    top: 0;
+    margin-bottom: 5px;
+}
+
+#stationDetails {
+    text-align: left;
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
+#stationFuelDetails {
+    text-align: left;
+    margin-top: 5px;
+    margin-left: 20px;
+}
+
+
+
+#conteiner {
+    width: 100%;
+    height: 100%;
+    padding-left: 40px;
+    opacity: 1;
+    transition: 0.2s;
+}
+
+#flex-header {
+    font-family: Shentox;
+    display: flex;
+    width: 100%;
+    background-color: #43464b;
+    color: white;
+    height: 100px;
+    position: fixed;
+    top: 0;
+    left: 40px;
+    z-index: 2;
+    transition: 0.2s;
+}
+
+#main {
+    width: 100%;
+    top: 0;
+}
+
+ul {
+    margin: 0;
+}
+
+#display {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    margin-top: 100px;
+    z-index: 1;
+}
+
+
+#userName {
+    font-family: Shentox;
+    position: relative;
+    width: 100%;
+    margin-top: 34px;
+    margin-left: 30px;
+    font-size: 20px;
+}
+
+#userAccBalance{
+    font-family: Shentox;
+    position: relative;
+    width: 100%;
+    margin-top: 34px;
+    margin-right: 45px;
+    text-align: right;
+    font-size: 20px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+</style>

@@ -5,6 +5,7 @@ function HeadMainContainer(){
     return(
         <div id="headMainContainer">
             <HeadUserGreet />
+            <HeadUserCorporation />
             <HeadUserBalance />
         </div>
     );
@@ -13,6 +14,12 @@ function HeadMainContainer(){
 function HeadUserGreet(){
     return(
         <div id="headUserGreet">Greetings USER_NAME</div>
+    );
+}
+
+function HeadUserCorporation(){
+    return(
+        <div id="headUserCorp">CORP_NAME</div>
     );
 }
 

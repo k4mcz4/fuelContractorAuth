@@ -4,7 +4,7 @@ import './MainContent.css';
 function MainContent(){
     return(
         <div id="mainContent">
-            Some Content
+            Some Content that will be loaded on the fly. If you see this, something went wrong
         </div>
     );
 }

@@ -1,10 +1,75 @@
 #naviBar{
     display: flex;
     flex-direction: column;
-    height: 100%;
-    width: 50px;
+    height: auto;
+    width: 180px;
+    background-color: rgb(54, 54, 54);
 }
 
 .naviButton{
-    background-color: tomato;
+    height: 40px;
+    padding-left: 15px;
+    text-align: left;
+    vertical-align: middle;
+    line-height: 40px;
+    color: silver;
+    transition: 0.3s;
+}
+
+#naviOpenButton{
+    height: 100px;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 100px;
+    color: silver;
+}
+
+#dashboard:hover{
+    background-color: rgb(201, 201, 201);
+    color: black !important; 
+}
+
+#dashboard:active{
+    background-color: rgb(139, 139, 139);
+    transition: 0s;
+}
+
+#mining:hover{
+    background-color: rgb(143, 143, 99);
+    color: black !important;
+}
+
+#mining:active{
+    background-color: rgb(112, 112, 77);
+    transition: 0s;
+}
+
+#industry:hover{
+    background-color: rgb(180, 180, 52);
+    color: black !important;
+}
+
+#industry:active{
+    background-color: rgb(143, 143, 42);
+    transition: 0s;
+}
+
+#market:hover{
+    background-color: rgb(101, 202, 5);
+    color: black !important;
+}
+
+#market:active{
+    background-color: rgb(75, 153, 1);
+    transition: 0s;
+}
+
+#security:hover{
+    background-color: rgb(0, 152, 253);
+    color: black !important;
+}
+
+#security:active{
+    background-color: rgb(3, 116, 192);
+    transition: 0s;
 }

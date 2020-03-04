@@ -1,20 +1,18 @@
 import React from 'react';
 import './MainContentRender.css'
+import DashboardView from './DashboardView.js'
+import MiningView from './MiningView.js'
 
 function DashboardContent(){
     return(
-        <div>
-            Dashboard Content
-        </div>
+        <DashboardView />
     )
 
 }
 
 function MiningContent(){
     return(
-        <div>
-            Mining Content
-        </div>
+        <MiningView />
     )
 
 }

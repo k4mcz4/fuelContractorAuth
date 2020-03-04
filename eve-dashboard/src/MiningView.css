@@ -1,0 +1,50 @@
+#sectionName{
+    padding-left: 20px;
+    padding-top: 15px;
+    font-size: 30px;
+}
+
+
+#materialStripContainer{
+    background-color: gainsboro;
+    display: flex; 
+
+    flex-direction: column;
+}
+
+#materialHeadContainer{
+    display: flex;
+    height: auto;
+}
+
+#materialStationContainer{
+    display: flex;
+
+    height: auto;
+}
+
+#materialTile{
+    display: flex;
+    background-color: whitesmoke;
+
+    width: auto;
+
+    margin-left: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+
+    padding: 10px;
+
+    flex-direction: column;
+}
+
+#materialHorizontalStrip{
+    display: flex;
+    
+    flex-direction: row;
+}
+
+.tileContent{
+    padding-left: 5px;
+    padding-right: 5px;
+}

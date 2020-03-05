@@ -31,7 +31,6 @@ function MaterialTile(props){
     return(
         <div id="materialTile">
             <MaterialTileHead materialDetail={props.material}/>
-
             {
                 props.material.stations.map(
                     function(stationMaterial){
@@ -67,7 +66,7 @@ function MaterialTileStation(props){
 
 const dummyMaterialList = 
     {
-        materialType: "Mineral",
+        materialType: "Minerals",
         materials: [
             {
                 itemTypeId: 34,
@@ -127,7 +126,7 @@ const dummyMaterialList =
 
 const dummyOreList = 
     {
-        materialType: "Ore",
+        materialType: "Ores",
         materials: [{
 
             itemTypeId: 77,
